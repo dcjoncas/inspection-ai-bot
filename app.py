@@ -1,12 +1,18 @@
 from flask import Flask, request, jsonify, render_template
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
+import os
 
 app = Flask(__name__)
 
-# Load model and tokenizer
-tokenizer = AutoTokenizer.from_pretrained("model")
-model = AutoModelForCausalLM.from_pretrained("model")
+# Load Hugging Face token from Render environment (if needed for private repos)
+HF_TOKEN = os.environ.get("HF_TOKEN")
+
+# Load model and tokenizer (with or without token)
+tokenizer = AutoTokenizer.from_pretrained("djoncas99/inspection-bot", token=os.environ.get("HF_TOKEN"))
+model = AutoModelForCausalLM.from_pretrained("djoncas99/inspection-bot", token=os.environ.get("HF_TOKEN"))
+
+
 
 @app.route("/")
 def home():
