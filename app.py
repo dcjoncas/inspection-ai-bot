@@ -6,11 +6,10 @@ import os
 app = Flask(__name__)
 
 # Load Hugging Face token from Render environment (if needed for private repos)
-HF_TOKEN = os.environ.get("HF_TOKEN")
+token = os.environ.get("HF_TOKEN")
 
-# Load model and tokenizer (with or without token)
-tokenizer = AutoTokenizer.from_pretrained("djoncas99/inspection-bot", token=os.environ.get("HF_TOKEN"))
-model = AutoModelForCausalLM.from_pretrained("djoncas99/inspection-bot", token=os.environ.get("HF_TOKEN"))
+tokenizer = AutoTokenizer.from_pretrained("djoncas99/inspection-bot", token=token)
+model = AutoModelForCausalLM.from_pretrained("djoncas99/inspection-bot", token=token)
 
 
 
