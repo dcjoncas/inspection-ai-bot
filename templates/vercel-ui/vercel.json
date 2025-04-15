@@ -1,0 +1,8 @@
+{
+  "projects": [
+    {
+      "name": "vehicle-inspection-ui",
+      "rootDirectory": "vercel-ui"
+    }
+  ]
+}

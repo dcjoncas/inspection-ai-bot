@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vehicle Inspection Chatbot</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 700px;
+        margin: 40px auto;
+      }
+
+      input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        font-size: 1em;
+      }
+
+      button {
+        margin-top: 10px;
+        padding: 10px 20px;
+        font-size: 1em;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      #response {
+        margin-top: 20px;
+        border: 1px solid #ccc;
+        padding: 15px;
+        background: #f9f9f9;
+        min-height: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Ask the Vehicle Inspection AI</h1>
+    <input
+      id="prompt"
+      type="text"
+      placeholder="Try asking: What is checked during a rear trailer inspection?"
+    />
+    <button onclick="ask()">Ask</button>
+
+    <h3>Response:</h3>
+    <div id="response">Awaiting your question...</div>
+
+    <script>
+      async function ask() {
+        const prompt = document.getElementById("prompt").value.trim();
+        const responseBox = document.getElementById("response");
+
+        if (!prompt) {
+          responseBox.innerText = "Please enter a question.";
+          return;
+        }
+
+        responseBox.innerText = "Thinking... 🤖";
+
+        try {
+          const res = await fetch("/ask", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt }),
+          });
+
+          const data = await res.json();
+          console.log("Model response:", data);
+          responseBox.innerText = data.response || "No response returned.";
+        } catch (err) {
+          console.error("Request failed", err);
+          responseBox.innerText = "Something went wrong. Please try again.";
+        }
+      }
+    </script>
+  </body>
+</html>
