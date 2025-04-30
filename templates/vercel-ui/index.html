@@ -64,14 +64,11 @@
         responseBox.innerText = "Thinking... 🤖";
 
         try {
-          const res = await fetch(
-            "https://your-render-service.onrender.com/ask",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ prompt }),
-            }
-          );
+          const res = await fetch("https://inspection-api.onrender.com/ask", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt }),
+          });
 
           const data = await res.json();
           console.log("Model response:", data);

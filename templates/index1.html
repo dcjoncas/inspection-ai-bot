@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AI Generation Config</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+      }
+      label {
+        display: block;
+        margin-top: 15px;
+        font-weight: bold;
+      }
+      input[type="range"] {
+        width: 100%;
+      }
+      input[type="number"] {
+        width: 60px;
+      }
+      textarea {
+        width: 100%;
+        height: 80px;
+        margin-top: 10px;
+      }
+      #output {
+        border: 1px solid #ccc;
+        padding: 15px;
+        background: #f9f9f9;
+        min-height: 50px;
+        margin-top: 20px;
+      }
+      button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 1em;
+      }
+      .preset {
+        margin-right: 10px;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>AI Generation Settings Playground</h1>
+
+    <label for="prompt">Prompt:</label>
+    <textarea id="prompt" placeholder="Enter your prompt here..."></textarea>
+
+    <label for="do_sample">Do Sample:</label>
+    <select id="do_sample">
+      <option value="false">False (deterministic)</option>
+      <option value="true">True (sample-based)</option>
+    </select>
+
+    <label for="temperature"
+      >Temperature: <span id="tempValue">0.7</span></label
+    >
+    <input
+      type="range"
+      id="temperature"
+      min="0"
+      max="2"
+      step="0.1"
+      value="0.7"
+      oninput="tempValue.innerText = this.value"
+    />
+
+    <label for="top_k">Top K:</label>
+    <input type="number" id="top_k" min="0" max="100" value="50" />
+
+    <label for="top_p">Top P:</label>
+    <input type="number" id="top_p" min="0" max="1" step="0.01" value="0.95" />
+
+    <label for="repetition_penalty">Repetition Penalty:</label>
+    <input
+      type="number"
+      id="repetition_penalty"
+      min="1"
+      max="2"
+      step="0.1"
+      value="1.1"
+    />
+
+    <label for="max_tokens">Max New Tokens:</label>
+    <input type="number" id="max_tokens" min="10" max="200" value="100" />
+
+    <div>
+      <h3>Presets:</h3>
+      <button class="preset" onclick="applyPreset('factual')">
+        Factual / Anti-Hallucination
+      </button>
+      <button class="preset" onclick="applyPreset('balanced')">Balanced</button>
+      <button class="preset" onclick="applyPreset('creative')">
+        Creative / Chatty
+      </button>
+    </div>
+
+    <button onclick="generateText()">Generate</button>
+
+    <h3>Response:</h3>
+    <div id="output">Awaiting generation...</div>
+
+    <script>
+      function applyPreset(type) {
+        if (type === "factual") {
+          document.getElementById("do_sample").value = "false";
+          document.getElementById("temperature").value = 0.0;
+          document.getElementById("tempValue").innerText = 0.0;
+          document.getElementById("top_k").value = 0;
+          document.getElementById("top_p").value = 0.0;
+          document.getElementById("repetition_penalty").value = 1.2;
+          document.getElementById("max_tokens").value = 100;
+        } else if (type === "balanced") {
+          document.getElementById("do_sample").value = "true";
+          document.getElementById("temperature").value = 0.7;
+          document.getElementById("tempValue").innerText = 0.7;
+          document.getElementById("top_k").value = 50;
+          document.getElementById("top_p").value = 0.9;
+          document.getElementById("repetition_penalty").value = 1.1;
+          document.getElementById("max_tokens").value = 120;
+        } else if (type === "creative") {
+          document.getElementById("do_sample").value = "true";
+          document.getElementById("temperature").value = 1.2;
+          document.getElementById("tempValue").innerText = 1.2;
+          document.getElementById("top_k").value = 100;
+          document.getElementById("top_p").value = 0.95;
+          document.getElementById("repetition_penalty").value = 1.0;
+          document.getElementById("max_tokens").value = 150;
+        }
+      }
+
+      async function generateText() {
+        const settings = {
+          prompt: document.getElementById("prompt").value,
+          do_sample: document.getElementById("do_sample").value === "true",
+          temperature: parseFloat(document.getElementById("temperature").value),
+          top_k: parseInt(document.getElementById("top_k").value),
+          top_p: parseFloat(document.getElementById("top_p").value),
+          repetition_penalty: parseFloat(
+            document.getElementById("repetition_penalty").value
+          ),
+          max_new_tokens: parseInt(document.getElementById("max_tokens").value),
+        };
+
+        const res = await fetch("/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(settings),
+        });
+
+        const data = await res.json();
+        document.getElementById("output").innerText =
+          data.response || "No response returned.";
+      }
+    </script>
+  </body>
+</html>
